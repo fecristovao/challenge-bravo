@@ -1,0 +1,11 @@
+require 'rspec/core/rake_task'
+
+namespace :test do
+  desc "All tests"
+  task :all do
+    RSpec::Core::RakeTask.new(:spec) do |t|
+      t.pattern = 'spec/controller/*_spec.rb'
+    end
+    Rake::Task["spec"].execute
+  end
+end
