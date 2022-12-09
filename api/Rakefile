@@ -1,10 +1,17 @@
 require 'rspec/core/rake_task'
 
+namespace :db do
+  desc 'Seed database'
+  task :seed do
+    ruby 'db/seed.rb'
+  end
+end
+
 namespace :test do
   desc "All tests"
   task :all do
     RSpec::Core::RakeTask.new(:spec) do |t|
-      t.pattern = 'spec/controller/*_spec.rb'
+      t.pattern = 'spec/**/*_spec.rb'
     end
     Rake::Task["spec"].execute
   end
