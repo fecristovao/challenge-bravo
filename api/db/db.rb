@@ -17,6 +17,7 @@ unless DB.table_exists?(:currencies)
   DB.create_table :currencies do
     String :name
     Float :ratio
+    Boolean :is_virtual
     primary_key [:name]
   end
 end
