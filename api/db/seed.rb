@@ -7,8 +7,9 @@ request = RestClient.get(url)
 response = JSON.parse(request)
 
 unless response.nil?
-
+  
   data = response['data']['rates']
+  puts "Got #{data.size} currencises"
   data.each do |currency, rate|
     new_currency = Currency.find(name: currency) || Currency.new
     new_currency.name = currency
