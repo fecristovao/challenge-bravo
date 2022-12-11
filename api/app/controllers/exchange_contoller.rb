@@ -7,7 +7,10 @@ class ExchangeController < Api
     halt 400, json(data: 'Wrong Params') if initials_from == initials_to
 
     currency = exchange(initials_from, initials_to, amount)
-    halt 200, json(data: { from: initials_from, to: initials_to, amount: amount.to_f, rate: currency }) unless currency.nil?
+    unless currency.nil?
+      halt 200,
+           json(data: { from: initials_from, to: initials_to, amount: amount.to_f, rate: currency })
+    end
     halt 400, json(data: 'Wrong Params')
   end
 
@@ -18,11 +21,7 @@ class ExchangeController < Api
     halt 400 if initials_currency.nil?
     halt 400 if ratio_currency <= 0
 
-    new_currency = Currency.new
-    new_currency.name = initials_currency
-    new_currency.ratio = ratio_currency
-    new_currency.is_virtual = true
-    new_currency = new_currency.save
+    Currency.save_and_cache(initials_currency, ratio_currency)
 
     halt 200, json(data: { name: initials_currency, rate: ratio_currency })
   end
@@ -31,8 +30,7 @@ class ExchangeController < Api
     initials_currency = params[:initials]
     halt 400 if initials_currency.nil?
 
-    currency = Currency.find(name: initials_currency)
-    currency&.delete
+    Currency.delete_and_cache(initials_currency)
 
     halt 204
   end
@@ -40,19 +38,19 @@ class ExchangeController < Api
   private
 
   def exchange(from_currency, to_currency, amount)
-    amount = amount.to_f
+    amount = amount&.to_f
     from_currency.upcase!
     to_currency.upcase!
     begin
-      from_currency_data = Currency.find(name: from_currency)&.ratio
-      to_currency_data   = Currency.find(name: to_currency)&.ratio
-      return (amount / from_currency_data) if to_currency == 'USD'
-      return (to_currency_data * amount) if from_currency == 'USD'
+      from_currency_data = Currency.find_and_cache(from_currency)&.ratio
+      to_currency_data   = Currency.find_and_cache(to_currency)&.ratio
+      (amount / from_currency_data) if !from_currency_data.nil? && to_currency == 'USD'
+      return (to_currency_data * amount) if !to_currency_data.nil? && from_currency == 'USD'
 
-      (to_currency_data / from_currency_data) * amount
-    rescue NoMethodError, TypeError => e
-      logger.info("Error no exchange #{e}")
+      (to_currency_data / from_currency_data) * amount unless from_currency_data.nil? && to_currency_data.nil?
+    rescue NoMethodError, TypeError
       nil
     end
   end
+  nil
 end
