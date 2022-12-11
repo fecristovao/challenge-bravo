@@ -1,4 +1,5 @@
 Dir[File.expand_path(File.join(__dir__, '..', 'app', 'models', '*.rb'))].each { |f| require f }
+require File.expand_path(File.join(__dir__, '..', 'lib','cache_redis.rb'))
 require 'rest-client'
 require 'json'
 
@@ -18,3 +19,6 @@ unless response.nil?
     new_currency.save
   end
 end
+
+currency = Currency.limit(ENV['CACHE_PAGINATION'])
+currency.each { |item| RedisStore.set(item.name, item.ratio) }

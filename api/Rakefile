@@ -15,4 +15,18 @@ namespace :test do
     end
     Rake::Task["spec"].execute
   end
+
+  task :controllers do
+    RSpec::Core::RakeTask.new(:spec) do |t|
+      t.pattern = 'spec/controller/*_spec.rb'
+    end
+    Rake::Task["spec"].execute
+  end
+
+  task :models do
+    RSpec::Core::RakeTask.new(:spec) do |t|
+      t.pattern = 'spec/model/*_spec.rb'
+    end
+    Rake::Task["spec"].execute
+  end
 end
