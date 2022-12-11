@@ -4,7 +4,7 @@ def app
   ExchangeController.new
 end
 
-describe 'Endpoints without params', :focus do
+describe 'Endpoints without params' do
   it 'GET Endpoint' do
     get '/'
     expect(last_response.status).to eq(400)
@@ -21,7 +21,7 @@ describe 'Endpoints without params', :focus do
   end
 end
 
-describe 'GET Endpoint with wrong params', :focus do
+describe 'GET Endpoint with wrong params' do
   it 'Wrong From Currency' do
     get '/?from=AGL&to=USD&amount=1'
     expect(last_response.status).to eq(400)
@@ -43,21 +43,21 @@ describe 'GET Endpoint with wrong params', :focus do
   end
 end
 
-describe 'DELETE Endpoint with wrong params', :focus do
+describe 'DELETE Endpoint with wrong params' do
   it 'Inexistent currency' do
     delete '/delete/ABRO'
     expect(last_response.status).to eq(204)
   end
 end
 
-describe 'ADD Endpoint with wrong params', :focus do
+describe 'ADD Endpoint with wrong params' do
   it 'Negative rate' do
     post '/add', { initials: 'SUPER', rate: -5.68 }
     expect(last_response.status).to eq(400)
   end
 end
 
-describe 'Endpoints with right params', :focus do
+describe 'Endpoints with right params' do
   it 'GET Endpoint' do
     get '/?from=BRL&to=USD&amount=1'
     expect(last_response.status).to eq(200)
@@ -75,16 +75,34 @@ describe 'Endpoints with right params', :focus do
   end
 end
 
+describe 'Cache Tests' do
+  it 'Add Cache' do
+    post '/add', { initials: 'SUPER', rate: 5.68 }
+    expect(RedisStore.get('SUPER')).to eq('5.68')
+  end
+
+  it 'Delete Cache' do
+    delete '/delete/SUPER'
+    expect(RedisStore.get('SUPER')).to eq(nil)
+  end
+
+  it 'Get Cache' do
+    get '/?from=BRL&to=BOB&amount=1'
+    expect(RedisStore.get('BRL')).not_to eq(nil)
+    expect(RedisStore.get('BOB')).not_to eq(nil)
+  end
+end
+
 describe 'Benchmark tests' do
   it 'GET Endpoint' do
-    expect { get '/' }.to perform_at_least(3000).within(1)
+    expect { get '/' }.to perform_at_least(5000).within(1)
   end
 
   it 'POST Endpoint' do
-    expect { post '/add' }.to perform_at_least(3000).within(1)
+    expect { post '/add' }.to perform_at_least(5000).within(1)
   end
 
   it 'DELETE Endpoint' do
-    expect { delete '/delete' }.to perform_at_least(3000).within(1)
+    expect { delete '/delete' }.to perform_at_least(5000).within(1)
   end
 end
