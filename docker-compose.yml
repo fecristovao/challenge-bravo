@@ -28,3 +28,16 @@ services:
       - postgresql
     tty: true
     stdin_open: true
+  runner:
+    build: .
+    restart: always
+    command: rake db:schedule
+    volumes:
+      - ./api:/api
+    env_file:
+      - .env
+    depends_on:
+      - redis
+      - postgresql
+    tty: true
+    stdin_open: true

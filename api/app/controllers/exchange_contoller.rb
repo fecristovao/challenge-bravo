@@ -44,7 +44,7 @@ class ExchangeController < Api
     begin
       from_currency_data = Currency.find_and_cache(from_currency)&.ratio
       to_currency_data   = Currency.find_and_cache(to_currency)&.ratio
-      (amount / from_currency_data) if !from_currency_data.nil? && to_currency == 'USD'
+      return (amount / from_currency_data) if !from_currency_data.nil? && to_currency == 'USD'
       return (to_currency_data * amount) if !to_currency_data.nil? && from_currency == 'USD'
 
       (to_currency_data / from_currency_data) * amount unless from_currency_data.nil? && to_currency_data.nil?

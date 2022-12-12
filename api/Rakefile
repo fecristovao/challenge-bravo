@@ -1,9 +1,21 @@
 require 'rspec/core/rake_task'
+require File.expand_path(File.join(__dir__, 'db', 'seed.rb'))
 
 namespace :db do
   desc 'Seed database'
   task :seed do
-    ruby 'db/seed.rb'
+    Seed::populateSQL
+    Seed::populateCache
+  end
+
+  desc 'Schedule seed'
+  task :schedule do
+    Rake::Task["db:seed"].invoke
+    loop do
+      Seed::populateSQL
+      puts "Waiting"
+      sleep(ENV['DB_SEED'].to_i)
+    end
   end
 end
 

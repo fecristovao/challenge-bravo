@@ -29,8 +29,6 @@ class Currency < Sequel::Model
   end
 
   def self.delete_and_cache(name)
-    return unless RedisStore.get(name)
-
     RedisStore.delete(name)
     Currency.first(name: name)&.delete
   end
