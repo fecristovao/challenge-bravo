@@ -33,7 +33,7 @@ A resposta seria:
 Para adicionar uma nova moeda, é usado `POST /add` com os parâmetros `initials`e `rate`.
 
  - `initials` é a sigla da moeda
- - `rate` é o seu valor em dólar
+ - `rate` é quanto dessa moeda é necessário para se ter um dolár americano
 
 Ex: Adicionar moeda chamada ABC com rate de 2.5
 ````curl -d "initials=ABC&rate=2.5" -X POST http://localhost:4567/add````
@@ -105,6 +105,7 @@ api/
  - [PostgreSQL](https://www.postgresql.org/)
  - [Docker](https://www.docker.com/)
  - [Docker-Compose](https://docs.docker.com/compose/)
+ - [SequelORM](https://sequel.jeremyevans.net/)
 
 
 ## Rodando o projeto

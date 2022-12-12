@@ -52,7 +52,7 @@ end
 
 describe 'ADD Endpoint with wrong params' do
   it 'Negative rate' do
-    post '/add', { initials: 'SUPER', rate: -5.68 }
+    post '/add', { initials: 'ABC', rate: -5.68 }
     expect(last_response.status).to eq(400)
   end
 end
@@ -64,26 +64,26 @@ describe 'Endpoints with right params' do
   end
 
   it 'ADD Endpoint' do
-    post '/add', { initials: 'SUPER', rate: 5.68 }
+    post '/add', { initials: 'ABC', rate: 5.68 }
     expect(last_response.status).to eq(200)
-    expect(last_response.body).to eq({ data: { name: 'SUPER', rate: 5.68 } }.to_json)
+    expect(last_response.body).to eq({ data: { name: 'ABC', rate: 5.68 } }.to_json)
   end
 
   it 'DELETE Endpoint' do
-    delete '/delete/SUPER'
+    delete '/delete/ABC'
     expect(last_response.status).to eq(204)
   end
 end
 
 describe 'Cache Tests' do
   it 'Add Cache' do
-    post '/add', { initials: 'SUPER', rate: 5.68 }
-    expect(RedisStore.get('SUPER')).to eq('5.68')
+    post '/add', { initials: 'ABC', rate: 5.68 }
+    expect(RedisStore.get('ABC')).to eq('5.68')
   end
 
   it 'Delete Cache' do
-    delete '/delete/SUPER'
-    expect(RedisStore.get('SUPER')).to eq(nil)
+    delete '/delete/ABC'
+    expect(RedisStore.get('ABC')).to eq(nil)
   end
 
   it 'Get Cache' do
